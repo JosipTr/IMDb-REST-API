@@ -31,7 +31,6 @@ public class AuthController {
 		return "Private page";
 	}
 	
-	
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
 		try {
