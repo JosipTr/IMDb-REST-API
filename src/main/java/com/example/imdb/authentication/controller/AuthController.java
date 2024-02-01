@@ -57,13 +57,17 @@ public class AuthController {
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+	public ResponseEntity<Object> register(@RequestBody RegisterRequest request) {
 		try {
 			UserEntity user = authService.saveUser(request);
-			return new ResponseEntity<String>("Registration successful\nWelcome " + user.email(), HttpStatus.CREATED);
+			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(user.email(), user.password()));
+			if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
+			var principal = (UserPrincipal)authentication.getPrincipal();
+			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
+			return new ResponseEntity<Object>(new RegisterRequest(principal.getId(), token), HttpStatus.CREATED);
 		} catch (Exception e) {
 			System.out.println(e);
-			return new ResponseEntity<String>("Registration failed", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Object>("Registration failed", HttpStatus.BAD_REQUEST);
 		}
 	}
 }
