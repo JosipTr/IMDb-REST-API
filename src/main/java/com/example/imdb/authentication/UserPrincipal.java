@@ -10,11 +10,14 @@ public class UserPrincipal implements UserDetails{
 	private static final long serialVersionUID = -884969297281604339L;
 	private final String id;
 	private final String email;
+	private final String password;
 	
-	public UserPrincipal(String id, String email) {
+	public UserPrincipal(String id, String email, String password) {
 		super();
 		this.id = id;
 		this.email = email;
+		this.password = password;
+		
 	}
 
 	public String getId() {
@@ -30,7 +33,7 @@ public class UserPrincipal implements UserDetails{
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
-		return null;
+		return password;
 	}
 
 	@Override

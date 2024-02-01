@@ -1,13 +1,20 @@
 package com.example.imdb.authentication.controller;
 
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.imdb.authentication.JwtIssuer;
+import com.example.imdb.authentication.UserPrincipal;
 import com.example.imdb.authentication.entity.UserEntity;
+import com.example.imdb.authentication.model.LoginRequest;
+import com.example.imdb.authentication.model.LoginResponse;
 import com.example.imdb.authentication.model.RegisterRequest;
 import com.example.imdb.authentication.service.AuthService;
 
@@ -15,10 +22,14 @@ import com.example.imdb.authentication.service.AuthService;
 public class AuthController {
 	
 	private final AuthService authService;
-	
-	public AuthController(AuthService authService) {
+	private final AuthenticationManager authenticationManager;
+	private final JwtIssuer jwtIssuer;
+
+	public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtIssuer jwtIssuer) {
 		super();
 		this.authService = authService;
+		this.authenticationManager = authenticationManager;
+		this.jwtIssuer = jwtIssuer;
 	}
 
 	@GetMapping("/")
@@ -29,6 +40,20 @@ public class AuthController {
 	@GetMapping("/private")
 	public String getPrivate() {
 		return "Private page";
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<Object> login(@RequestBody LoginRequest request) {
+		try {
+		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
+		if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
+		var principal = (UserPrincipal)authentication.getPrincipal();
+		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
+		return ResponseEntity.ok(new LoginResponse(principal.getId(), token));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@PostMapping("/register")

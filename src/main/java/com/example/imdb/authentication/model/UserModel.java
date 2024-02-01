@@ -13,8 +13,8 @@ public class UserModel {
 	@Id
 	private String id;
 	@Indexed(unique = true)
-	private final String email;
-	private final String password;
+	private  String email;
+	private  String password;
 
 	public UserModel(String id, String email, String password) {
 		super();
@@ -28,13 +28,17 @@ public class UserModel {
 		this.email = email;
 		this.password = password;
 	}
+	
+	public UserModel() {
+		
+	}
 
 	public static UserModel fromRegisterRequest(RegisterRequest request) {
 		return new UserModel(request.email(), request.password());
 	}
 
 	public UserEntity toUserEntity() {
-		return new UserEntity(id, email);
+		return new UserEntity(id, email, password);
 	}
 
 	public String getId() {
