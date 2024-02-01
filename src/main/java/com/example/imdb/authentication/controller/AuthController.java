@@ -64,7 +64,7 @@ public class AuthController {
 			if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
 			var principal = (UserPrincipal)authentication.getPrincipal();
 			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
-			return new ResponseEntity<Object>(new RegisterRequest(principal.getId(), token), HttpStatus.CREATED);
+			return new ResponseEntity<Object>(new LoginResponse(principal.getId(), token), HttpStatus.CREATED);
 		} catch (Exception e) {
 			System.out.println(e);
 			return new ResponseEntity<Object>("Registration failed", HttpStatus.BAD_REQUEST);
