@@ -9,6 +9,7 @@ import com.example.imdb.authentication.dto.RegisterDto;
 import com.example.imdb.authentication.dto.UserDto;
 import com.example.imdb.authentication.entity.UserEntity;
 import com.example.imdb.authentication.repository.AuthRepository;
+import com.example.imdb.core.UserNotFoundException;
 
 @Service
 public class AuthServiceImpl implements AuthService{
@@ -25,19 +26,19 @@ public class AuthServiceImpl implements AuthService{
 	@Override
 	public UserDto getUserById(String id) {
 		Optional<UserEntity> userEntity =  authRepository.findById(id);
-		if (!userEntity.isPresent()) throw new IllegalArgumentException("User not found");
+		if (!userEntity.isPresent()) throw new UserNotFoundException("User not found");
 		return userEntity.get().toUserDto();
 	}
 
 	@Override
 	public UserDto getUserByEmail(String email) {
 		Optional<UserEntity> userEntity =  authRepository.getUserByEmail(email);
-		if (!userEntity.isPresent()) throw new IllegalArgumentException("User not found");
+		if (!userEntity.isPresent()) throw new UserNotFoundException("User not found");
 		return userEntity.get().toUserDto();
 	}
 
 	@Override
-	public UserEntity saveUser(RegisterDto registerRequest) throws IllegalArgumentException{
+	public UserEntity saveUser(RegisterDto registerRequest) {
 		UserEntity user = UserEntity.fromRegisterDto(registerRequest);
 		user.setPassword(passwordEncoder.encode(registerRequest.password()));
 		UserEntity savedUser = authRepository.save(user);

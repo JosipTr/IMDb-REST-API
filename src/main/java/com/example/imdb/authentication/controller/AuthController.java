@@ -14,7 +14,6 @@ import com.example.imdb.authentication.UserPrincipal;
 import com.example.imdb.authentication.dto.LoginDto;
 import com.example.imdb.authentication.dto.LoginResponseDto;
 import com.example.imdb.authentication.dto.RegisterDto;
-import com.example.imdb.authentication.entity.UserEntity;
 import com.example.imdb.authentication.model.JwtIssuer;
 import com.example.imdb.authentication.service.AuthService;
 
@@ -46,7 +45,6 @@ public class AuthController {
 	public ResponseEntity<Object> login(@RequestBody LoginDto request) {
 		try {
 		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
-		if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
 		var principal = (UserPrincipal)authentication.getPrincipal();
 		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
 		return ResponseEntity.ok(new LoginResponseDto(principal.getId(), token));
@@ -58,16 +56,11 @@ public class AuthController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<Object> register(@RequestBody RegisterDto request) {
-		try {
-			UserEntity user = authService.saveUser(request);
+			authService.saveUser(request);
 			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
-			if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
+			
 			var principal = (UserPrincipal)authentication.getPrincipal();
 			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
 			return new ResponseEntity<Object>(new LoginResponseDto(principal.getId(), token), HttpStatus.CREATED);
-		} catch (Exception e) {
-			System.out.println(e);
-			return new ResponseEntity<Object>("Registration failed", HttpStatus.BAD_REQUEST);
-		}
 	}
 }
