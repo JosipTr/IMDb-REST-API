@@ -60,7 +60,7 @@ public class AuthController {
 	public ResponseEntity<Object> register(@RequestBody RegisterDto request) {
 		try {
 			UserEntity user = authService.saveUser(request);
-			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(user.getEmail(), user.getPassword()));
+			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
 			if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
 			var principal = (UserPrincipal)authentication.getPrincipal();
 			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
