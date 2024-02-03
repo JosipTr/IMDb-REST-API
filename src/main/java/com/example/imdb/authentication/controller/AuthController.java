@@ -16,6 +16,7 @@ import com.example.imdb.authentication.dto.LoginResponseDto;
 import com.example.imdb.authentication.dto.RegisterDto;
 import com.example.imdb.authentication.model.JwtIssuer;
 import com.example.imdb.authentication.service.AuthService;
+import com.example.imdb.core.ApiError;
 
 @RestController
 public class AuthController {
@@ -43,10 +44,15 @@ public class AuthController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody LoginDto request) {
+		try {
 		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
 		var principal = (UserPrincipal)authentication.getPrincipal();
 		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
 		return ResponseEntity.ok(new LoginResponseDto(principal.getId(), token));
+		} catch (Exception e) {
+			//Return exception here because can't throw it in CustomUserDetailsController
+			return ResponseEntity.badRequest().body(new ApiError("Bad credentials"));
+		}
 	}
 	
 	@PostMapping("/register")
