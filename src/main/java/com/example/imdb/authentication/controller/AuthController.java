@@ -43,22 +43,16 @@ public class AuthController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody LoginDto request) {
-		try {
 		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
 		var principal = (UserPrincipal)authentication.getPrincipal();
 		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
 		return ResponseEntity.ok(new LoginResponseDto(principal.getId(), token));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
-		}
 	}
 	
 	@PostMapping("/register")
 	public ResponseEntity<Object> register(@RequestBody RegisterDto request) {
 			authService.saveUser(request);
 			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
-			
 			var principal = (UserPrincipal)authentication.getPrincipal();
 			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
 			return new ResponseEntity<Object>(new LoginResponseDto(principal.getId(), token), HttpStatus.CREATED);
