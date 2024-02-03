@@ -1,27 +1,32 @@
 package com.example.imdb.authentication;
 
+import java.util.Optional;
+
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.imdb.authentication.entity.UserEntity;
-import com.example.imdb.authentication.service.AuthService;
+import com.example.imdb.authentication.repository.AuthRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 	
-	private final AuthService authService;
+	private final AuthRepository authRepository;
 
-	public CustomUserDetailsService(AuthService authService) {
+	public CustomUserDetailsService(AuthRepository authRepository) {
 		super();
-		this.authService = authService;
+		this.authRepository = authRepository;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		UserEntity user = authService.getUserByEmail(email);
-		return new UserPrincipal(user.id(), user.email(), "{noop}" + user.password());
+		Optional<UserEntity> userEntity = authRepository.getUserByEmail(email);
+		if (!userEntity.isPresent()) throw new UsernameNotFoundException("Invalid email or password");
+		UserEntity user = userEntity.get();
+		return user.toUserPrincipal();
 	}
 	
 }

@@ -1,4 +1,4 @@
-package com.example.imdb.authentication;
+package com.example.imdb.authentication.model;
 
 import org.springframework.stereotype.Component;
 

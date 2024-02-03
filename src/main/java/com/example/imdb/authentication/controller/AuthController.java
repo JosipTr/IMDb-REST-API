@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.imdb.authentication.JwtIssuer;
 import com.example.imdb.authentication.UserPrincipal;
+import com.example.imdb.authentication.dto.LoginDto;
+import com.example.imdb.authentication.dto.LoginResponseDto;
+import com.example.imdb.authentication.dto.RegisterDto;
 import com.example.imdb.authentication.entity.UserEntity;
-import com.example.imdb.authentication.model.LoginRequest;
-import com.example.imdb.authentication.model.LoginResponse;
-import com.example.imdb.authentication.model.RegisterRequest;
+import com.example.imdb.authentication.model.JwtIssuer;
 import com.example.imdb.authentication.service.AuthService;
 
 @RestController
@@ -43,13 +43,13 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Object> login(@RequestBody LoginRequest request) {
+	public ResponseEntity<Object> login(@RequestBody LoginDto request) {
 		try {
 		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
 		if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
 		var principal = (UserPrincipal)authentication.getPrincipal();
 		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
-		return ResponseEntity.ok(new LoginResponse(principal.getId(), token));
+		return ResponseEntity.ok(new LoginResponseDto(principal.getId(), token));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
@@ -57,14 +57,14 @@ public class AuthController {
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<Object> register(@RequestBody RegisterRequest request) {
+	public ResponseEntity<Object> register(@RequestBody RegisterDto request) {
 		try {
 			UserEntity user = authService.saveUser(request);
-			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(user.email(), user.password()));
+			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(user.getEmail(), user.getPassword()));
 			if (!authentication.isAuthenticated()) return new ResponseEntity<Object>("Failure", HttpStatus.BAD_REQUEST);
 			var principal = (UserPrincipal)authentication.getPrincipal();
 			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
-			return new ResponseEntity<Object>(new LoginResponse(principal.getId(), token), HttpStatus.CREATED);
+			return new ResponseEntity<Object>(new LoginResponseDto(principal.getId(), token), HttpStatus.CREATED);
 		} catch (Exception e) {
 			System.out.println(e);
 			return new ResponseEntity<Object>("Registration failed", HttpStatus.BAD_REQUEST);

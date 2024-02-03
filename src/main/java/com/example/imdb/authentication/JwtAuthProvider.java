@@ -6,6 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.imdb.authentication.model.JwtDecoder;
 
 @Component
 public class JwtAuthProvider implements AuthenticationProvider{

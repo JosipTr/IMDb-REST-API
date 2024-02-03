@@ -1,10 +1,12 @@
 package com.example.imdb.authentication.service;
 
+import com.example.imdb.authentication.dto.RegisterDto;
+
+import com.example.imdb.authentication.dto.UserDto;
 import com.example.imdb.authentication.entity.UserEntity;
-import com.example.imdb.authentication.model.RegisterRequest;
 
 public interface AuthService {
-	UserEntity getUserById(String id);
-	UserEntity getUserByEmail(String email);
-	UserEntity saveUser(RegisterRequest registerRequest);
+	UserDto getUserById(String id);
+	UserDto getUserByEmail(String email);
+	UserEntity saveUser(RegisterDto registerDto);
 }
