@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.imdb.movie.model.MovieModel;
@@ -37,6 +38,22 @@ public class MovieController {
 		List<MovieModel> movies;
 		try {
 			movies = repository.getAllMovies();
+			return movies;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return List.of();
+		
+	}
+	
+	@GetMapping("/movies/{name}")
+	public List<MovieModel> getMovieByName(@PathVariable String name) {
+				try {
+			List<MovieModel> movies = repository.getMoviesByName(name);
 			return movies;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
