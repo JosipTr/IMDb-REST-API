@@ -85,15 +85,3 @@ public class MovieEntity {
 	
 	
 }
-
-//"FIELD1": 0,
-//"Moive Name": " Leave the World Behind",
-//"Rating": "6.5",
-//"Votes": "90000.0",
-//"Meta Score": "67",
-//"Genre": "Drama, Mystery, Thriller",
-//"PG Rating": "R",
-//"Year": 2023,
-//"Duration": "2h 18m",
-//"Cast": "Julia Roberts, Mahershala Ali, Ethan Hawke, Myha'la",
-//"Director": "Sam Esmail"
