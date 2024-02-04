@@ -1,10 +1,9 @@
-package com.example.imdb.movie.model;
+package com.example.imdb.movie.entity;
 
 import java.util.Objects;
 
-import org.json.simple.JSONObject;
 
-public class MovieModel {
+public class MovieEntity {
 	private final Long id;
 	private final String name;
 	private final String rating;
@@ -14,7 +13,7 @@ public class MovieModel {
 	private final String cast;
 	private final String director;
 	
-	public MovieModel(Long id, String name, String rating, String genre, Long year, String duration, String cast,
+	public MovieEntity(Long id, String name, String rating, String genre, Long year, String duration, String cast,
 			String director) {
 		super();
 		this.id = id;
@@ -25,10 +24,6 @@ public class MovieModel {
 		this.duration = duration;
 		this.cast = cast;
 		this.director = director;
-	}
-	
-	public static MovieModel fromJson(JSONObject jsonObject) {
-		return new MovieModel((Long) jsonObject.get("id"), (String) jsonObject.get("Title"), (String) jsonObject.get("Rating"),(String) jsonObject.get("Genre"),(Long) jsonObject.get("Year"),(String) jsonObject.get("Duration"),(String) jsonObject.get("Cast"),(String) jsonObject.get("Director"));
 	}
 
 	public Long getId() {
@@ -76,7 +71,7 @@ public class MovieModel {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MovieModel other = (MovieModel) obj;
+		MovieEntity other = (MovieEntity) obj;
 		return Objects.equals(cast, other.cast) && Objects.equals(director, other.director)
 				&& Objects.equals(duration, other.duration) && Objects.equals(genre, other.genre) && id == other.id
 				&& Objects.equals(name, other.name) && Objects.equals(rating, other.rating) && year == other.year;

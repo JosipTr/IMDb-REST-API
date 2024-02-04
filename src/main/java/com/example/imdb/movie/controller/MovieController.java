@@ -2,14 +2,13 @@ package com.example.imdb.movie.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.imdb.movie.model.MovieModel;
+import com.example.imdb.movie.entity.MovieEntity;
 import com.example.imdb.movie.repository.MovieRepository;
 
 @RestController
@@ -23,20 +22,21 @@ public class MovieController {
 	}
 
 	@GetMapping("/movie")
-	public String getMovie() {
+	public MovieEntity getMovie() {
 		try {
 		var movie = repository.getMovieById(1);
 		System.out.println(movie.toString());
-		return "Success";
+		return movie;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			return null;
 		}
-		return "Movie";
+		
 	}
 	
 	@GetMapping("/movies")
-	public List<MovieModel> getMovies() {
-		List<MovieModel> movies;
+	public List<MovieEntity> getMovies() {
+		List<MovieEntity> movies;
 		try {
 			movies = repository.getAllMovies();
 			return movies;
@@ -52,11 +52,9 @@ public class MovieController {
 	}
 	
 	@GetMapping("/movies/{name}")
-	public List<MovieModel> getMovieByName(@PathVariable String name) {
+	public List<MovieEntity> getMovieByName(@PathVariable String name) {
 				try {
-			List<MovieModel> movies = repository.getMoviesByName(name);
-			Set<String> dud = repository.getAllGenres();
-			System.out.println(dud.toString());
+			List<MovieEntity> movies = repository.getMoviesByName(name);
 			return movies;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
