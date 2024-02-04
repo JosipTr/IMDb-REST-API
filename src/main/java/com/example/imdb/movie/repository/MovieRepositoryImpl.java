@@ -30,8 +30,8 @@ public class MovieRepositoryImpl implements MovieRepository {
 	}
 
 	public List<MovieEntity> getMoviesByName(String name) {
-
-		return movieList.stream().filter(movie -> containsTitle(movie, name)).toList();
+		name.toLowerCase();
+		return movieList.stream().filter(t -> containsTitle(t, name)).toList(); 
 	}
 
 	public List<MovieEntity> getMoviesByFilter(String filter) {
@@ -40,7 +40,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 	}
 
 	private boolean containsTitle(MovieEntity movie, String name) {
-		String title = movie.getName();
+		String title = movie.getName().toLowerCase();
 		return title.contains(name);
 	}
 

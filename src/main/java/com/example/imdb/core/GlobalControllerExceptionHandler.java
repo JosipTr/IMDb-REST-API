@@ -16,7 +16,7 @@ import org.springframework.web.util.WebUtils;
 
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
-	Logger logger = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@ExceptionHandler({ IllegalArgumentException.class, UserNotFoundException.class, IOException.class, FileNotFoundException.class, NoSuchElementException.class })
 	public final ResponseEntity<ApiError> handleException(Exception ex, WebRequest request) {
