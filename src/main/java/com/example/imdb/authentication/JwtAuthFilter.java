@@ -1,6 +1,7 @@
 package com.example.imdb.authentication;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,11 +29,13 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String token = jwtHandler.extractJwt(request);
-		if (token == null || token.isEmpty()) {
+		var headers = Collections.list(request.getHeaderNames());
+
+		if (!headers.contains("authorization")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
+		String token = jwtHandler.extractJwt(request);
 		JwtAuthToken authRequest = JwtAuthToken.unauthenticated(token);
 		var authentication = authenticationManager.authenticate(authRequest);
 		var context = SecurityContextHolder.createEmptyContext();
