@@ -41,8 +41,13 @@ public class AuthServiceImpl implements AuthService{
 	public UserEntity saveUser(RegisterDto registerRequest) {
 		UserEntity user = UserEntity.fromRegisterDto(registerRequest);
 		user.setPassword(passwordEncoder.encode(registerRequest.password()));
+		try {
 		UserEntity savedUser = authRepository.save(user);
 		return savedUser;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
+		
 	}
 	
 	

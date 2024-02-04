@@ -17,25 +17,22 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter{
 	
 	private final AuthenticationManager authenticationManager;
+	private final JwtHandler jwtHandler;
 
-	public JwtAuthFilter(@Lazy AuthenticationManager authenticationManager) {
+	public JwtAuthFilter(@Lazy AuthenticationManager authenticationManager, JwtHandler jwtHandler) {
 		super();
 		this.authenticationManager = authenticationManager;
+		this.jwtHandler = jwtHandler;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
-		final String authHeader = request.getHeader("Authorization");
-		
-		if (authHeader == null || authHeader.isEmpty()) {
+		String token = jwtHandler.extractJwt(request);
+		if (token == null || token.isEmpty()) {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		
-		final String token = authHeader.substring(7);
-		
 		JwtAuthToken authRequest = JwtAuthToken.unauthenticated(token);
 		var authentication = authenticationManager.authenticate(authRequest);
 		var context = SecurityContextHolder.createEmptyContext();

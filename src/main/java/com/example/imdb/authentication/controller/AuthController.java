@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.imdb.authentication.JwtHandler;
 import com.example.imdb.authentication.UserPrincipal;
 import com.example.imdb.authentication.dto.LoginDto;
 import com.example.imdb.authentication.dto.LoginResponseDto;
 import com.example.imdb.authentication.dto.RegisterDto;
-import com.example.imdb.authentication.model.JwtIssuer;
 import com.example.imdb.authentication.service.AuthService;
 import com.example.imdb.core.ApiError;
 
@@ -23,13 +23,13 @@ public class AuthController {
 	
 	private final AuthService authService;
 	private final AuthenticationManager authenticationManager;
-	private final JwtIssuer jwtIssuer;
+	private final JwtHandler jwtHandler;
 
-	public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtIssuer jwtIssuer) {
+	public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtHandler jwtHandler) {
 		super();
 		this.authService = authService;
 		this.authenticationManager = authenticationManager;
-		this.jwtIssuer = jwtIssuer;
+		this.jwtHandler = jwtHandler;
 	}
 
 	@GetMapping("/")
@@ -45,10 +45,8 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody LoginDto request) {
 		try {
-		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
-		var principal = (UserPrincipal)authentication.getPrincipal();
-		var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
-		return ResponseEntity.ok(new LoginResponseDto(principal.getId(), token));
+		LoginResponseDto response = loginUser(request.email(), request.password());
+		return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			//Return exception here because can't throw it in CustomUserDetailsController
 			return ResponseEntity.badRequest().body(new ApiError("Bad credentials"));
@@ -58,9 +56,14 @@ public class AuthController {
 	@PostMapping("/register")
 	public ResponseEntity<Object> register(@RequestBody RegisterDto request) {
 			authService.saveUser(request);
-			var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password()));
-			var principal = (UserPrincipal)authentication.getPrincipal();
-			var token = jwtIssuer.issueToken(principal.getId(), principal.getUsername());
-			return new ResponseEntity<Object>(new LoginResponseDto(principal.getId(), token), HttpStatus.CREATED);
+			LoginResponseDto response = loginUser(request.email(), request.password());
+			return new ResponseEntity<Object>(response, HttpStatus.CREATED);
+	}
+	
+	private LoginResponseDto loginUser(String email, String password) {
+		var authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken.unauthenticated(email, password));
+		var principal = (UserPrincipal)authentication.getPrincipal();
+		var token = jwtHandler.createToken(principal.getId());
+		return new LoginResponseDto(principal.getId(), token);
 	}
 }
