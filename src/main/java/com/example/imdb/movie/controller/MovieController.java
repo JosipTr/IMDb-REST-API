@@ -1,7 +1,9 @@
 package com.example.imdb.movie.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +56,8 @@ public class MovieController {
 	public List<MovieModel> getMovieByName(@PathVariable String name) {
 				try {
 			List<MovieModel> movies = repository.getMoviesByName(name);
+			Set<String> dud = repository.getAllGenres();
+			System.out.println(dud.toString());
 			return movies;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -62,6 +66,7 @@ public class MovieController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+				
 		return List.of();
 		
 	}

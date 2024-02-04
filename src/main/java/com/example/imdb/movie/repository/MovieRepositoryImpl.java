@@ -2,7 +2,9 @@ package com.example.imdb.movie.repository;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,6 +38,7 @@ public class MovieRepositoryImpl implements MovieRepository {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<MovieModel> getMoviesByName(String name) throws IOException, ParseException {
 		FileReader reader = new FileReader(FILE_URL);
 		JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
@@ -44,6 +47,33 @@ public class MovieRepositoryImpl implements MovieRepository {
 				.filter(jsonObject -> containsTitle(jsonObject, name))
 				.map(jsonObject -> MovieModel.fromJson((JSONObject) jsonObject))
 				.toList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<MovieModel> getMoviesByFilter(String filter) throws IOException, ParseException {
+		FileReader reader = new FileReader(FILE_URL);
+		JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
+
+		return jsonArray.stream()
+				.filter(jsonObject -> containsTitle(jsonObject, filter))
+				.map(jsonObject -> MovieModel.fromJson((JSONObject) jsonObject))
+				.toList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<String> getAllGenres() throws IOException, ParseException  {
+		FileReader reader = new FileReader(FILE_URL);
+		JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
+		Set<String> d = new HashSet<>();
+		List<String> li = jsonArray.stream().map((Object jsonObject) ->  ((JSONObject)jsonObject).get("Genre")).toList();
+		
+		for (String f : li) {
+			d.add(f);
+		}
+		
+		return d;
+
 	}
 
 	private boolean containsTitle(Object jsonObject, String name) {
