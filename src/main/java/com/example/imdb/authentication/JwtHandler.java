@@ -1,5 +1,8 @@
 package com.example.imdb.authentication;
 
+import java.time.Instant;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,8 @@ public class JwtHandler {
 	public String createToken(String id) {
 		return JWT.create()
 				.withSubject(id)
+				.withIssuedAt(new Date())
+				.withExpiresAt(Instant.now().plusSeconds(300))
 				.sign(Algorithm.HMAC256(secret));
 	}
 	
