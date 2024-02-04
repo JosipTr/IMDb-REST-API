@@ -7,30 +7,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.imdb.movie.entity.MovieEntity;
-import com.example.imdb.movie.repository.MovieRepository;
+import com.example.imdb.movie.service.MovieService;
 
 @RestController
 public class MovieController {
 
-	private final MovieRepository repository;
+	private final MovieService service;
 
-	public MovieController(MovieRepository repository) {
+	public MovieController(MovieService service) {
 		super();
-		this.repository = repository;
+		this.service = service;
 	}
 
 	@GetMapping("/movie/{id}")
 	public MovieEntity getMovie(@PathVariable int id) {
-			return repository.getMovieById(id);
+			return service.getMovieById(id);
 	}
 
 	@GetMapping("/movies")
 	public List<MovieEntity> getMovies() {
-		return repository.getAllMovies();
+		return service.getAllMovies();
 	}
 
 	@GetMapping("/movies/{name}")
 	public List<MovieEntity> getMovieByName(@PathVariable String name) {
-		return repository.getMoviesByName(name);
+		return service.getMoviesByName(name);
 	}
 }

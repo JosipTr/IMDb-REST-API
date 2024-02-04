@@ -2,6 +2,7 @@ package com.example.imdb.core;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import org.springframework.web.util.WebUtils;
 public class GlobalControllerExceptionHandler {
 	Logger logger = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
 
-	@ExceptionHandler({ IllegalArgumentException.class, UserNotFoundException.class, IOException.class })
+	@ExceptionHandler({ IllegalArgumentException.class, UserNotFoundException.class, IOException.class, FileNotFoundException.class, NoSuchElementException.class })
 	public final ResponseEntity<ApiError> handleException(Exception ex, WebRequest request) {
 		HttpHeaders headers = new HttpHeaders();
 		if (ex instanceof IllegalArgumentException) {
@@ -46,6 +47,13 @@ public class GlobalControllerExceptionHandler {
 			FileNotFoundException ioe = (FileNotFoundException) ex;
 
 			return handleFileNotFoundException(ioe, headers, status, request);
+		}
+		else if (ex instanceof NoSuchElementException) {
+
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			NoSuchElementException ioe = (NoSuchElementException) ex;
+
+			return handleNoSuchElementException(ioe, headers, status, request);
 		}
 		else {
 			HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -76,6 +84,13 @@ public class GlobalControllerExceptionHandler {
 	}
 	
 	protected ResponseEntity<ApiError> handleFileNotFoundException(FileNotFoundException ex, HttpHeaders headers,
+			HttpStatus status, WebRequest request) {
+		String error = ex.getMessage();
+		logger.error(ex.getMessage(), ex);
+		return handleExceptionInternal(ex, new ApiError(error), headers, status, request);
+	}
+	
+	protected ResponseEntity<ApiError> handleNoSuchElementException(NoSuchElementException ex, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
 		String error = ex.getMessage();
 		logger.error(ex.getMessage(), ex);
